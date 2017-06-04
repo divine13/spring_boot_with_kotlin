@@ -21,15 +21,20 @@ class VoteController {
     private lateinit var voteRepo: VoteRepo
 
     @RequestMapping(value = "/polls/{pollId}/votes", method = arrayOf(RequestMethod.POST))
-    fun createVote(@PathVariable pollId: Long, @RequestBody vote: Vote) : ResponseEntity<Any> {
+    fun createVote(@PathVariable pollId: Long, @RequestBody vote: Vote): ResponseEntity<Any> {
         val v = voteRepo.save(vote)
         val responseHeader = HttpHeaders()
         responseHeader.location = ServletUriComponentsBuilder
-                                                        .fromCurrentRequest()
-                                                        .path("/{id}")
-                                                        .buildAndExpand(vote.id)
-                                                        .toUri()
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(vote.id)
+                .toUri()
         return ResponseEntity<Any>(null, responseHeader, HttpStatus.CREATED)
     }
 
+
+    @RequestMapping(value = "/polls/{pollId}/votes", method = arrayOf(RequestMethod.GET))
+    fun getAllVotes(@PathVariable pollId: Long): Iterable<Vote> {
+        return voteRepo.findByPoll(pollId)
+    }
 }
